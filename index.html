@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeSnap</title>
+  <link id="hljs-theme" rel="stylesheet" href="vendor/styles/atom-one-dark.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="vendor/highlight.min.js"></script>
+  <script src="vendor/html2canvas.min.js"></script>
+  <script src="vendor/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+  <header>
+    <div class="logo">Code<span>Snap</span></div>
+    <small>Code / Cmd / Folder / URL / Button → Export PNG / PDF</small>
+  </header>
+
+  <div class="modes">
+    <div class="mode-btn active" data-mode="code">💻 Code</div>
+    <div class="mode-btn" data-mode="term">⌨️ Cmd</div>
+    <div class="mode-btn" data-mode="folder">📁 Folder</div>
+    <div class="mode-btn" data-mode="url">🌐 URL</div>
+    <div class="mode-btn" data-mode="key">🔠 Key</div>
+    <div class="mode-btn" data-mode="resp">🧾 Response</div>
+  </div>
+
+  <div class="layout">
+    <aside class="controls">
+
+      <div class="mode-fields active" id="fields-code">
+        <div class="field"><label>โค้ดของคุณ</label>
+          <textarea id="code" spellcheck="false"></textarea>
+        </div>
+        <div class="row2">
+          <div class="field"><label>ภาษา</label>
+            <select id="lang">
+              <option value="auto">Auto detect</option>
+              <option>python</option>
+              <option>javascript</option>
+              <option>typescript</option>
+              <option>php</option>
+              <option>html</option>
+              <option>css</option>
+              <option>sql</option>
+              <option>java</option>
+              <option>c</option>
+              <option>cpp</option>
+              <option>csharp</option>
+              <option>bash</option>
+              <option>json</option>
+              <option>dart</option>
+              <option>go</option>
+              <option>rust</option>
+              <option>kotlin</option>
+              <option>yaml</option>
+            </select>
+          </div>
+          <div class="field"><label>ธีมโค้ด</label>
+            <select id="theme">
+              <option value="atom-one-dark">Atom One Dark</option>
+              <option value="github-dark">GitHub Dark</option>
+              <option value="monokai">Monokai</option>
+              <option value="nord">Nord</option>
+              <option value="tokyo-night-dark">Tokyo Night</option>
+              <option value="vs2015">VS 2015</option>
+              <option value="atom-one-light">Atom One Light</option>
+              <option value="github">GitHub Light</option>
+            </select>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="lines" checked> เลขบรรทัด</label>
+      </div>
+
+      <div class="mode-fields" id="fields-term">
+        <div class="field"><label>บรรทัดที่ขึ้นต้นด้วย $ หรือ &gt; = คำสั่ง, อื่นๆ = output</label>
+          <textarea id="termInput" spellcheck="false"></textarea>
+        </div>
+        <div class="field"><label>Prompt path</label>
+          <input type="text" id="termPrompt" value="guy@rmutr:~/project">
+        </div>
+      </div>
+
+      <div class="mode-fields" id="fields-folder">
+        <div class="field"><label>เยื้อง 2 space ต่อระดับ, ใส่ / ท้ายชื่อถ้าเป็นโฟลเดอร์</label>
+          <textarea id="folderInput" spellcheck="false"></textarea>
+        </div>
+        <div class="field"><label>ชื่อ root</label>
+          <input type="text" id="folderRoot" value="project">
+        </div>
+      </div>
+
+      <div class="mode-fields" id="fields-url">
+        <div class="field"><label>URL</label>
+          <input type="text" id="urlInput" value="https://guylab.example.com/dashboard">
+        </div>
+        <div class="field"><label>ชื่อแท็บ</label>
+          <input type="text" id="urlTab" value="GuyLab — Dashboard">
+        </div>
+        <div class="field"><label>ธีม</label>
+          <select id="urlTheme">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mode-fields" id="fields-btn">
+        <div class="field"><label>ตัวอย่างสำเร็จรูป</label>
+          <select id="btnPreset">
+            <option value="">— เลือก —</option>
+            <option value="copy">คัดลอก / วาง</option>
+            <option value="save">บันทึก / เปิด</option>
+            <option value="run">รัน / หยุด</option>
+            <option value="steps">ขั้นตอน 1-2-3</option>
+          </select>
+        </div>
+        <div class="field"><label>1 บรรทัด = 1 ปุ่ม: ไอคอน|ข้อความ|สไตล์|ไฮไลต์ (* หรือเลขขั้น)</label>
+          <textarea id="btnInput" spellcheck="false"></textarea>
+        </div>
+        <div class="row2">
+          <div class="field"><label>ขนาดปุ่ม</label>
+            <select id="btnSize">
+              <option value="1">ปกติ</option>
+              <option value="1.3">ใหญ่</option>
+              <option value="0.85">เล็ก</option>
+            </select>
+          </div>
+          <div class="field"><label>การเรียง</label>
+            <select id="btnLayout">
+              <option value="row">แนวนอน</option>
+              <option value="column">แนวตั้ง</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>สีวงแหวนไฮไลต์</label>
+          <select id="btnRing">
+            <option value="#ef4444">แดง</option>
+            <option value="#f59e0b">ส้ม</option>
+            <option value="#22c55e">เขียว</option>
+            <option value="#3b82f6">น้ำเงิน</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mode-fields" id="fields-key">
+        <div class="field"><label>ตัวอย่างสำเร็จรูป</label>
+          <select id="keyPreset">
+            <option value="">— เลือก —</option>
+            <option value="copy">Copy / Paste / Cut</option>
+            <option value="undo">Undo / Redo / Save</option>
+            <option value="find">Find / Select all</option>
+            <option value="sys">Task Manager / Screenshot</option>
+            <option value="term">Terminal</option>
+          </select>
+        </div>
+        <div class="field"><label>1 บรรทัด = 1 ชุดคีย์: Ctrl+C|คัดลอก</label>
+          <textarea id="keyInput" spellcheck="false"></textarea>
+        </div>
+        <div class="row2">
+          <div class="field"><label>ระบบ</label><select id="keyOS">
+              <option value="win">Windows</option>
+              <option value="mac">Mac</option>
+            </select></div>
+          <div class="field"><label>สีปุ่ม</label><select id="keyTheme">
+              <option value="light">ขาว</option>
+              <option value="dark">ดำ</option>
+            </select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>ขนาดปุ่ม</label><select id="keySize">
+              <option value="1">ปกติ</option>
+              <option value="1.4">ใหญ่</option>
+              <option value="0.85">เล็ก</option>
+            </select></div>
+          <div class="field"><label>การเรียง</label><select id="keyLayout">
+              <option value="column">แนวตั้ง</option>
+              <option value="row">แนวนอน</option>
+            </select></div>
+        </div>
+      </div>
+
+
+      <div class="mode-fields" id="fields-resp">
+        <div class="field"><label>ตัวอย่างสำเร็จรูป</label>
+          <select id="respPreset">
+            <option value="">— เลือก —</option>
+            <option value="ok">200 OK</option>
+            <option value="created">201 Created</option>
+            <option value="invalid">422 Validation error</option>
+            <option value="notfound">404 Not Found</option>
+            <option value="server">500 Server error</option>
+          </select>
+        </div>
+        <div class="field"><label>JSON ที่ได้รับ (วางผลลัพธ์จริงได้เลย)</label>
+          <textarea id="respJson" spellcheck="false"></textarea>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Method</label>
+            <select id="respMethod">
+              <option>GET</option>
+              <option>POST</option>
+              <option>PUT</option>
+              <option>PATCH</option>
+              <option>DELETE</option>
+            </select>
+          </div>
+          <div class="field"><label>Status code</label><input type="text" id="respStatus" value="200"></div>
+        </div>
+        <div class="field"><label>URL</label><input type="text" id="respUrl"></div>
+        <div class="row2">
+          <div class="field"><label>เวลา (ms)</label><input type="text" id="respTime" value="124"></div>
+          <div class="field"><label>การจัดรูป</label>
+            <select id="respIndent">
+              <option value="2">Pretty 2 space</option>
+              <option value="4">Pretty 4 space</option>
+              <option value="0">Minify</option>
+            </select>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="respHeader" checked> แถบ Method / Status</label>
+        <label class="check"><input type="checkbox" id="respLines"> เลขบรรทัด</label>
+      </div>
+      <div class="row2">
+        <div class="field"><label>พื้นหลัง</label>
+          <select id="bg">
+            <option value="linear-gradient(135deg,#667eea,#764ba2)">Violet</option>
+            <option value="linear-gradient(135deg,#ff6b6b,#feca57)">Sunset</option>
+            <option value="linear-gradient(135deg,#00b09b,#96c93d)">Green</option>
+            <option value="linear-gradient(135deg,#2193b0,#6dd5ed)">Ocean</option>
+            <option value="linear-gradient(135deg,#f953c6,#b91d73)">Pink</option>
+            <option value="linear-gradient(135deg,#232526,#414345)">Dark Gray</option>
+            <option value="#1e1e2e">Solid Dark</option>
+            <option value="#f5f5f5">Solid Light</option>
+            <option value="transparent">โปร่งใส (PNG)</option>
+          </select>
+        </div>
+        <div class="field"><label>ชื่อบน titlebar / ชื่อไฟล์</label>
+          <input type="text" id="title" value="main.py">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>ขอบรอบภาพ: <span id="padVal">56</span>px</label>
+          <input type="range" id="pad" min="0" max="120" value="56">
+        </div>
+        <div class="field"><label>ขนาดตัวอักษร: <span id="fsVal">14</span>px</label>
+          <input type="range" id="fs" min="10" max="22" value="14">
+        </div>
+      </div>
+
+      <label class="check"><input type="checkbox" id="titlebarOn" checked> Titlebar</label>
+
+      <div class="field"><label>ความคมชัด Export: <span id="scaleVal">4</span>x</label>
+        <input type="range" id="scale" min="2" max="6" value="4">
+      </div>
+
+      <div class="btns">
+        <button class="btn-png" id="btnPng">⬇ PNG</button>
+        <button class="btn-pdf" id="btnPdf">⬇ PDF</button>
+        <button class="btn-copy" id="btnCopy">📋 คัดลอกภาพไปคลิปบอร์ด</button>
+      </div>
+    </aside>
+
+    <main class="preview-wrap">
+      <div id="capture">
+        <div class="window" id="window">
+          <div class="titlebar" id="titlebar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="title-text" id="titleText"></span>
+          </div>
+          <div id="bodyMount"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- โหมดต้องโหลดก่อน main.js -->
+  <script src="js/modes/code.js"></script>
+  <script src="js/modes/term.js"></script>
+  <script src="js/modes/folder.js"></script>
+  <script src="js/modes/url.js"></script>
+  <script src="js/modes/key.js"></script>
+  <script src="js/modes/resp.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
